@@ -4,31 +4,58 @@ import numpy as np
 import os
 from PIL import Image
 import pickle
+import glob
+import pandas as pd
 
 pathjoin = os.path.join
 
 # goal: run training data through network to train it. then save trained network so it can be used
 # to predict the train set
 
+
+def extract_id(filename):
+    """
+    take a filename of the form 'w_ID.[pikl/jpg/...]', return ID as an integer
+    :param filename:
+    :return:
+    """
+    return int(filename.split(sep=".")[0].split(sep="_")[1])
+
+
 #  === global prototyping switch ===
 prototype = True
 
 # === load data ===
-print("Loading data from pickle file")
+print("Loading data from pickle files")
 # define dirnames
-data_dir = pathjoin(".." , "..", "224x224")
+# also depends on whether you're working locally (on your computer) or on a cluster
+local = False
+print("Using local computer paths: {}".format(local))
+if local:
+    data_dir = pathjoin("/", "home", "niklas", "big_datasets", "whales-id", "224x224")
+else:
+    data_dir = pathjoin("..", "..", "224x224")
 img_dir = pathjoin(data_dir, "images")
 pickle_dir = pathjoin(data_dir, "python_pickle")
-if prototype:
-    pickle_file_path = pathjoin(pickle_dir, "images_and_ids_prototype.pkl")
-else:
-    pickle_file_path = pathjoin(pickle_dir, "images_and_ids.pkl")
 
-with open(pickle_file_path, "rb") as pickle_file:
-    pictures, ids = pickle.load(pickle_file)
+pickle_file_paths = glob.glob(pathjoin(pickle_dir, "w_*.pkl"))
+
+# a list of whale picture ids matching the order in which the files will be read in
+whale_picture_ids = [extract_id(os.path.basename(pfile_path)) for pfile_path in pickle_file_paths]
+
+n_images = len(pickle_file_paths)
+images_list = []
+for pfile_index, pfile_path in enumerate(pickle_file_paths):
+    print("loading image {} out of {}".format(pfile_index+1, n_images))
+    with open(pfile_path, "rb") as f:
+        images_list.append(pickle.load(f))
 
 # === split into train / validation set
-n_pictures = pictures.shape[0]
+# only keep images with known class
+# randomly split into train/validation
+# pickle completed train/validation
+class_data_csv_path = pathjoin(data_dir, "..", "train.csv")
+
 
 # === define network ===
 print("defining network")
