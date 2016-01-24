@@ -27,15 +27,29 @@ else:
 with open(pickle_file_path, "rb") as pickle_file:
     pictures, ids = pickle.load(pickle_file)
 
-# === define network ===
+# === split into train / validation set
+n_pictures = pictures.shape[0]
 
+# === define network ===
+print("defining network")
+network = create_network()
 
 # === mini-batch train network ===
+n_epochs = 500
+validation_errors = []
+for epoch_index in range(n_epochs):
+    for minibatch in iterate_minibatches():
+        train_network(network, minibatch)
+    validation_errors.append(validate_network(network, X_valid, Y_valid))
     # output / log validation error
+    print("Epoch {} finished. Validation error: {}".format(epoch_index, validation_errors[epoch_index]))
     # from time to time save intermittent network weights
-
+    if epoch % 20 == 0:
+        save_network(network)
 
 # === save final network weights ===
-
+print("Training finished, saving final network")
+save_network(network)
 
 # === display/save final stats ===
+
