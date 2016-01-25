@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d0e64a0a-0f52-49df-98fa-c20a5a7dd0f0" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/imgs2pckl.py" afterPath="$PROJECT_DIR$/imgs2pckl.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build_googlenet.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mtrx2mdl.py" afterPath="$PROJECT_DIR$/mtrx2mdl.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -41,13 +41,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="mtrx2mdl.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="mtrx2mdl.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mtrx2mdl.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5749386">
-              <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
               <folding>
                 <element signature="e#23#32#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build_googlenet.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/build_googlenet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.6904177">
+              <caret line="48" column="18" selection-start-line="48" selection-start-column="18" selection-end-line="48" selection-end-column="18" />
+              <folding>
+                <element signature="e#400#437#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -57,7 +69,7 @@
         <entry file="file://$PROJECT_DIR$/../../../some_ideas/whale_id.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="213" column="25" selection-start-line="213" selection-start-column="25" selection-end-line="213" selection-end-column="25" />
+              <caret line="96" column="31" selection-start-line="96" selection-start-column="31" selection-end-line="96" selection-end-column="31" />
               <folding />
             </state>
           </provider>
@@ -80,6 +92,7 @@
       <list>
         <option value="$PROJECT_DIR$/imgs2pckl.py" />
         <option value="$PROJECT_DIR$/mtrx2mdl.py" />
+        <option value="$PROJECT_DIR$/build_googlenet.py" />
       </list>
     </option>
   </component>
@@ -398,7 +411,13 @@
       <option name="project" value="LOCAL" />
       <updated>1453644738881</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="so many changes&#10;&#10;re-wrangled data into X_/Y_{train/validation} matrices with different dimensionality&#10;&#10;enabled saving of huge matrices in files&#10;&#10;moved this logic over to img2pckl.py">
+      <created>1453723267353</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1453723267353</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -433,7 +452,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="changed pickling to operate on each picture individually" />
     <MESSAGE value="work on reading in the data" />
-    <option name="LAST_COMMIT_MESSAGE" value="work on reading in the data" />
+    <MESSAGE value="so many changes&#10;&#10;re-wrangled data into X_/Y_{train/validation} matrices with different dimensionality&#10;&#10;enabled saving of huge matrices in files&#10;&#10;moved this logic over to img2pckl.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="so many changes&#10;&#10;re-wrangled data into X_/Y_{train/validation} matrices with different dimensionality&#10;&#10;enabled saving of huge matrices in files&#10;&#10;moved this logic over to img2pckl.py" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -485,14 +505,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../../some_ideas/whale_id.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="213" column="25" selection-start-line="213" selection-start-column="25" selection-end-line="213" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/imgs2pckl.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -503,12 +515,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../../../some_ideas/whale_id.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="96" column="31" selection-start-line="96" selection-start-column="31" selection-end-line="96" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mtrx2mdl.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5749386">
-          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
             <element signature="e#23#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_googlenet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6904177">
+          <caret line="48" column="18" selection-start-line="48" selection-start-column="18" selection-end-line="48" selection-end-column="18" />
+          <folding>
+            <element signature="e#400#437#0" expanded="true" />
           </folding>
         </state>
       </provider>

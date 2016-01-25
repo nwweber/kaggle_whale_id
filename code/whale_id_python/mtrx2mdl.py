@@ -2,6 +2,11 @@ __author__ = 'niklas'
 
 import os
 import pickle
+import theano
+import theano.tensor as T
+
+import lasagne
+
 
 pathjoin = os.path.join
 
@@ -32,6 +37,12 @@ with open(pathjoin(pickle_dir, "validation_arrays_prototype={}.pkl".format(proto
 
 # === define network ===
 print("defining network")
+
+
+def create_network():
+    pass
+
+
 network = create_network()
 
 # === mini-batch train network ===
