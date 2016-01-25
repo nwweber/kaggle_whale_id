@@ -1,15 +1,19 @@
 __author__ = 'niklas'
 
-import numpy as np
+import math
 import os
-from PIL import Image
 import pickle
+import glob
+
+import numpy as np
+import pandas as pd
+from PIL import Image
 
 pathjoin = os.path.join
 
 # define dirnames
 # also depends on whether you're working locally (on your computer) or on a cluster
-local = False
+local = True
 print("Using local computer paths: {}".format(local))
 if local:
     data_dir = pathjoin("/", "home", "niklas", "big_datasets", "whales-id", "224x224")
@@ -19,7 +23,7 @@ img_dir = pathjoin(data_dir, "images")
 pickle_dir = pathjoin(data_dir, "python_pickle")
 
 # prototyping for when just trying to verify that things work as they should
-prototype = False
+prototype = True
 if prototype:
     img_dir = pathjoin(data_dir, "tiny_sample")
 
@@ -28,17 +32,6 @@ print("Using tiny prototype sample: {}".format(prototype))
 # find image paths
 print("finding image paths")
 whale_picture_names = os.listdir(img_dir)
-
-# filenames are sorted lexicographically, which does not always correspond to numerical ordering of ids
-# e.g. after '1' there is '10005'
-# b/c whale pictures are linked to classes by IDs we need to keep track of this orderly
-# another caveat: there is exactly one ID missing (7489). So we can't just say that #row of matrix = ID of picture
-# unless we want to always have to think about that after 7488 it is row of matrix = ID-1 or something
-# that seems unreasonable
-# so let's save this somewhere
-# UPDATE: no need to save this list as now we process each picture individually, so the id
-# can remain part of the pickle file name
-# whale_ids = [int(w.split(sep=".")[0].split(sep="_")[1]) for w in whale_picture_names]
 
 # load pictures
 print("loading pictures")
@@ -58,22 +51,95 @@ for picture_index, picture_name in enumerate(whale_picture_names):
     with open(pickle_file_path, "wb") as pickle_file:
         pickle.dump(picture_as_array, pickle_file)
 
-    # # for first picture: initialize big matrix with appropriate dimensions
-    # if picture_index == 0:
-    #     print("initializing big matrix")
-    #     # shape is: #imgs x width x breadth x #channels
-    #     big_matrix_shape = tuple([n_pictures]) + picture_as_array.shape
-    #     all_pictures_matrix = np.empty(big_matrix_shape, dtype=np.int_)
-    #
-    # # save picture into big matrix
-    # all_pictures_matrix[picture_index:, ...] = picture_as_array
+def extract_image_id(filename):
+    """
+    take a filename of the form 'w_ID.[pikl/jpg/...]', return ID as an integer
+    :param filename:
+    :return:
+    """
+    return int(filename.split(sep=".")[0].split(sep="_")[1])
 
-# # pickle results
-# print("pickling big matrix")
-# if prototype:
-#     pickle_file_path = pathjoin(pickle_dir, "images_and_ids_prototype.pkl")
-# else:
-#     pickle_file_path = pathjoin(pickle_dir, "images_and_ids.pkl")
-#
-# with open(pickle_file_path, "wb") as pickle_file:
-#     pickle.dump((all_pictures_matrix, whale_ids), pickle_file)
+
+def tuple_list_to_arrays(tuple_list):
+    """
+    transform list of ( (width x breadth x #channels), class ) tuples into
+    X/Y arrays, with X having shape (#imgs x #channels x w x h) and Y
+    having shape (#imgs,)
+    :param tuple_list:
+    :return:
+    """
+    n_images = len(tuple_list)
+    head_image = tuple_list[0][0]
+    w, h, ch = head_image.shape
+    X = np.empty((n_images, ch, w, h), dtype=head_image.dtype)
+    Y = np.empty((n_images,))
+    for i, (image, class_label) in enumerate(tuple_list):
+        image_swapped = image.swapaxes(0, 2)
+        X[i, :, :, :] = image_swapped
+        Y[i] = class_label
+    return X, Y
+
+# === load data ===
+print("Loading data from pickle files")
+print("Using local computer paths: {}".format(local))
+if local:
+    data_dir = pathjoin("/", "home", "niklas", "big_datasets", "whales-id", "224x224")
+else:
+    data_dir = pathjoin("..", "..", "224x224")
+img_dir = pathjoin(data_dir, "images")
+pickle_dir = pathjoin(data_dir, "python_pickle")
+
+pickle_file_paths = glob.glob(pathjoin(pickle_dir, "w_*.pkl"))
+
+if prototype:
+    pickle_file_paths = pickle_file_paths[:10]
+
+# a list of whale picture ids matching the order in which the files will be read in
+whale_image_ids = [extract_image_id(os.path.basename(pfile_path)) for pfile_path in pickle_file_paths]
+
+n_images_in_dataset = len(pickle_file_paths)
+images_list = []
+for pfile_index, pfile_path in enumerate(pickle_file_paths):
+    print("loading image {} out of {}".format(pfile_index+1, n_images_in_dataset))
+    with open(pfile_path, "rb") as f:
+        images_list.append(pickle.load(f))
+
+# === split into train / validation set
+# only keep images with known class
+# randomly split into train/validation
+# pickle completed train/validation
+class_data_csv_path = pathjoin(data_dir, "..", "train.csv")
+class_data = pd.read_csv(class_data_csv_path)
+
+image_class_tuples = []
+for index, row_data in class_data.iterrows():
+    image_id = extract_image_id(row_data["Image"])
+    whale_id = int(row_data["whaleID"].split("_")[1])
+    # image id might not be present in list of iIDs if only using subset of images, e.g. for prototyping
+    try:
+        image_index = whale_image_ids.index(image_id)
+        image_class_tuples.append((images_list[image_index], whale_id))
+    except ValueError:
+        print("image id {} not found in list, skipping".format(image_id))
+        continue
+
+n_labelled_images = len(image_class_tuples)
+train_fraction = 0.8
+n_train_images = math.floor(train_fraction * n_labelled_images)
+n_validation_images = n_labelled_images - n_train_images
+
+# note: not a randomized split. then again, images are probably in a somewhat-random order anyway
+# if randomness desired: randomize indices into this list, then make new list based on these indices
+# then take slices of this list
+train_tuples = image_class_tuples[:n_train_images]
+test_tuples = image_class_tuples[n_train_images:]
+
+X_train, Y_train = tuple_list_to_arrays(train_tuples)
+X_validation, Y_validation = tuple_list_to_arrays(test_tuples)
+
+with open(pathjoin(pickle_dir, "train_arrays_prototype={}.pkl".format(prototype)), "wb") as f:
+    pickle.dump((X_train, Y_train), f, protocol=4)
+
+with open(pathjoin(pickle_dir, "validation_arrays_prototype={}.pkl".format(prototype)), "wb") as f:
+    pickle.dump((X_validation, Y_validation), f, protocol=4)
+

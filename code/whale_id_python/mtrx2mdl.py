@@ -1,26 +1,12 @@
 __author__ = 'niklas'
 
-import numpy as np
 import os
-from PIL import Image
 import pickle
-import glob
-import pandas as pd
 
 pathjoin = os.path.join
 
 # goal: run training data through network to train it. then save trained network so it can be used
 # to predict the train set
-
-
-def extract_id(filename):
-    """
-    take a filename of the form 'w_ID.[pikl/jpg/...]', return ID as an integer
-    :param filename:
-    :return:
-    """
-    return int(filename.split(sep=".")[0].split(sep="_")[1])
-
 
 #  === global prototyping switch ===
 prototype = True
@@ -29,7 +15,7 @@ prototype = True
 print("Loading data from pickle files")
 # define dirnames
 # also depends on whether you're working locally (on your computer) or on a cluster
-local = False
+local = True
 print("Using local computer paths: {}".format(local))
 if local:
     data_dir = pathjoin("/", "home", "niklas", "big_datasets", "whales-id", "224x224")
@@ -38,24 +24,11 @@ else:
 img_dir = pathjoin(data_dir, "images")
 pickle_dir = pathjoin(data_dir, "python_pickle")
 
-pickle_file_paths = glob.glob(pathjoin(pickle_dir, "w_*.pkl"))
+with open(pathjoin(pickle_dir, "train_arrays_prototype={}.pkl".format(prototype)), "rb") as f:
+    X_train, Y_train = pickle.load(f)
 
-# a list of whale picture ids matching the order in which the files will be read in
-whale_picture_ids = [extract_id(os.path.basename(pfile_path)) for pfile_path in pickle_file_paths]
-
-n_images = len(pickle_file_paths)
-images_list = []
-for pfile_index, pfile_path in enumerate(pickle_file_paths):
-    print("loading image {} out of {}".format(pfile_index+1, n_images))
-    with open(pfile_path, "rb") as f:
-        images_list.append(pickle.load(f))
-
-# === split into train / validation set
-# only keep images with known class
-# randomly split into train/validation
-# pickle completed train/validation
-class_data_csv_path = pathjoin(data_dir, "..", "train.csv")
-
+with open(pathjoin(pickle_dir, "validation_arrays_prototype={}.pkl".format(prototype)), "rb") as f:
+    X_validation, Y_validation = pickle.load(f)
 
 # === define network ===
 print("defining network")
