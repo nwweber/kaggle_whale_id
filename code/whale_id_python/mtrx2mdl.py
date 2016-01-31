@@ -42,7 +42,6 @@ print("defining network")
 def create_network():
     pass
 
-
 network = create_network()
 
 # === mini-batch train network ===

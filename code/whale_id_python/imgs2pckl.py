@@ -8,17 +8,21 @@ import glob
 import numpy as np
 import pandas as pd
 from PIL import Image
+from utils import guess_location
 
 pathjoin = os.path.join
 
 # define dirnames
 # also depends on whether you're working locally (on your computer) or on a cluster
-local = True
-print("Using local computer paths: {}".format(local))
-if local:
+
+location = guess_location()
+print("Guessed that the script is running in the following location: {}".format(location))
+if location == "laptop":
     data_dir = pathjoin("/", "home", "niklas", "big_datasets", "whales-id", "224x224")
 else:
+    # probably on the cluster
     data_dir = pathjoin("..", "..", "224x224")
+
 img_dir = pathjoin(data_dir, "images")
 pickle_dir = pathjoin(data_dir, "python_pickle")
 
@@ -81,13 +85,6 @@ def tuple_list_to_arrays(tuple_list):
 
 # === load data ===
 print("Loading data from pickle files")
-print("Using local computer paths: {}".format(local))
-if local:
-    data_dir = pathjoin("/", "home", "niklas", "big_datasets", "whales-id", "224x224")
-else:
-    data_dir = pathjoin("..", "..", "224x224")
-img_dir = pathjoin(data_dir, "images")
-pickle_dir = pathjoin(data_dir, "python_pickle")
 
 pickle_file_paths = glob.glob(pathjoin(pickle_dir, "w_*.pkl"))
 

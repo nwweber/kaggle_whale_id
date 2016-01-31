@@ -15,8 +15,8 @@ from lasagne.layers import DenseLayer
 from lasagne.layers import ConcatLayer
 from lasagne.layers import NonlinearityLayer
 from lasagne.layers import GlobalPoolLayer
-from lasagne.layers.dnn import Conv2DDNNLayer as ConvLayer
-from lasagne.layers.dnn import MaxPool2DDNNLayer as PoolLayerDNN
+from lasagne.layers import Conv2DLayer as ConvLayer
+from lasagne.layers import MaxPool2DLayer as PoolLayerDNN
 from lasagne.layers import MaxPool2DLayer as PoolLayer
 from lasagne.layers import LocalResponseNormalization2DLayer as LRNLayer
 from lasagne.nonlinearities import softmax, linear
@@ -96,7 +96,7 @@ def build_model():
 
     net['pool5/7x7_s1'] = GlobalPoolLayer(net['inception_5b/output'])
     net['loss3/classifier'] = DenseLayer(net['pool5/7x7_s1'],
-                                         num_units=1000,
+                                         num_units=2000,
                                          nonlinearity=linear)
     net['prob'] = NonlinearityLayer(net['loss3/classifier'],
                                     nonlinearity=softmax)
